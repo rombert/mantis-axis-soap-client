@@ -18,8 +18,8 @@
   	</dependency>
   </dependencies>
   <scm>
-  	<url>http://git.mantisforge.org/r/mantis-axis-soap-client.git</url>
-  	<connection>scm:git:git@git.mantisforge.org:srv/git/mantis-axis-soap-client.git.</connection>
+  	<url>https://github.com/rombert/mantis-axis-soap-client</url>
+  	<connection>scm:git:git@github.com:rombert/mantis-axis-soap-client.git</connection>
   </scm>
   <developers>
   	<developer>
