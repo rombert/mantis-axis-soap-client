@@ -147,6 +147,7 @@
    <xsd:element name="custom_fields" type="tns:CustomFieldValueForIssueDataArray" minOccurs="0"/>
    <xsd:element name="due_date" type="xsd:dateTime" minOccurs="0"/>
    <xsd:element name="monitors" type="tns:AccountDataArray" minOccurs="0"/>
+   <xsd:element name="sticky" type="xsd:boolean" minOccurs="0"/>
    <xsd:element name="tags" type="tns:ObjectRefArray" minOccurs="0"/>
   </xsd:all>
  </xsd:complexType>
@@ -314,6 +315,29 @@
  <xsd:complexType name="TagDataSearchResult">
   <xsd:all>
    <xsd:element name="results" type="tns:TagDataArray" minOccurs="0"/>
+   <xsd:element name="total_results" type="xsd:integer" minOccurs="0"/>
+  </xsd:all>
+ </xsd:complexType>
+ <xsd:complexType name="ProfileData">
+  <xsd:all>
+   <xsd:element name="id" type="xsd:integer" minOccurs="0"/>
+   <xsd:element name="user_id" type="tns:AccountData" minOccurs="0"/>
+   <xsd:element name="platform" type="xsd:string" minOccurs="0"/>
+   <xsd:element name="os" type="xsd:string" minOccurs="0"/>
+   <xsd:element name="os_build" type="xsd:string" minOccurs="0"/>
+   <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+  </xsd:all>
+ </xsd:complexType>
+ <xsd:complexType name="ProfileDataArray">
+  <xsd:complexContent>
+   <xsd:restriction base="SOAP-ENC:Array">
+    <xsd:attribute ref="SOAP-ENC:arrayType" wsdl:arrayType="tns:ProfileData[]"/>
+   </xsd:restriction>
+  </xsd:complexContent>
+ </xsd:complexType>
+ <xsd:complexType name="ProfileDataSearchResult">
+  <xsd:all>
+   <xsd:element name="results" type="tns:ProfileDataArray" minOccurs="0"/>
    <xsd:element name="total_results" type="xsd:integer" minOccurs="0"/>
   </xsd:all>
  </xsd:complexType>
@@ -697,6 +721,13 @@
   <part name="pref_name" type="xsd:string" /></message>
 <message name="mc_user_pref_get_prefResponse">
   <part name="return" type="xsd:string" /></message>
+<message name="mc_user_profiles_get_allRequest">
+  <part name="username" type="xsd:string" />
+  <part name="password" type="xsd:string" />
+  <part name="page_number" type="xsd:integer" />
+  <part name="per_page" type="xsd:integer" /></message>
+<message name="mc_user_profiles_get_allResponse">
+  <part name="return" type="tns:ProfileDataSearchResult" /></message>
 <message name="mc_tag_get_allRequest">
   <part name="username" type="xsd:string" />
   <part name="password" type="xsd:string" />
@@ -1016,6 +1047,11 @@
     <input message="tns:mc_user_pref_get_prefRequest"/>
     <output message="tns:mc_user_pref_get_prefResponse"/>
   </operation>
+  <operation name="mc_user_profiles_get_all">
+    <documentation>Get profiles available to the current user.</documentation>
+    <input message="tns:mc_user_profiles_get_allRequest"/>
+    <output message="tns:mc_user_profiles_get_allResponse"/>
+  </operation>
   <operation name="mc_tag_get_all">
     <documentation>Gets all the tags.</documentation>
     <input message="tns:mc_tag_get_allRequest"/>
@@ -1331,6 +1367,11 @@
   </operation>
   <operation name="mc_user_pref_get_pref">
     <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_user_pref_get_pref" style="rpc"/>
+    <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+    <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+  </operation>
+  <operation name="mc_user_profiles_get_all">
+    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_user_profiles_get_all" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
