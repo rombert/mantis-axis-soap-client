@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <definitions xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://futureware.biz/mantisconnect" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://futureware.biz/mantisconnect">
 <types>
-<xsd:schema targetNamespace="http://futureware.biz/mantisconnect"
->
- <xsd:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
- <xsd:import namespace="http://schemas.xmlsoap.org/wsdl/" />
+<xsd:schema targetNamespace="http://futureware.biz/mantisconnect">
+ <xsd:import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+ <xsd:import namespace="http://schemas.xmlsoap.org/wsdl/"/>
  <xsd:complexType name="StringArray">
   <xsd:complexContent>
    <xsd:restriction base="SOAP-ENC:Array">
@@ -31,6 +30,13 @@
    <xsd:element name="name" type="xsd:string" minOccurs="0"/>
    <xsd:element name="real_name" type="xsd:string" minOccurs="0"/>
    <xsd:element name="email" type="xsd:string" minOccurs="0"/>
+  </xsd:all>
+ </xsd:complexType>
+ <xsd:complexType name="UserData">
+  <xsd:all>
+   <xsd:element name="account_data" type="tns:AccountData" minOccurs="0"/>
+   <xsd:element name="access_level" type="xsd:integer" minOccurs="0"/>
+   <xsd:element name="timezone" type="xsd:string" minOccurs="0"/>
   </xsd:all>
  </xsd:complexType>
  <xsd:complexType name="AccountDataArray">
@@ -346,6 +352,11 @@
 <message name="mc_versionRequest"></message>
 <message name="mc_versionResponse">
   <part name="return" type="xsd:string" /></message>
+<message name="mc_loginRequest">
+  <part name="username" type="xsd:string" />
+  <part name="password" type="xsd:string" /></message>
+<message name="mc_loginResponse">
+  <part name="return" type="tns:UserData" /></message>
 <message name="mc_enum_statusRequest">
   <part name="username" type="xsd:string" />
   <part name="password" type="xsd:string" /></message>
@@ -752,6 +763,11 @@
     <input message="tns:mc_versionRequest"/>
     <output message="tns:mc_versionResponse"/>
   </operation>
+  <operation name="mc_login">
+    <documentation>Log the user in and get their information.</documentation>
+    <input message="tns:mc_loginRequest"/>
+    <output message="tns:mc_loginResponse"/>
+  </operation>
   <operation name="mc_enum_status">
     <documentation>Get the enumeration for statuses.</documentation>
     <input message="tns:mc_enum_statusRequest"/>
@@ -918,12 +934,12 @@
     <output message="tns:mc_project_get_id_from_nameResponse"/>
   </operation>
   <operation name="mc_project_get_issues">
-    <documentation>Get the issues that match the specified project id and paging details.</documentation>
+    <documentation>Get the issues that match the specified project id and paging details. Pass &quot;-1&quot; for the per_page parameter to get all issues.</documentation>
     <input message="tns:mc_project_get_issuesRequest"/>
     <output message="tns:mc_project_get_issuesResponse"/>
   </operation>
   <operation name="mc_project_get_issue_headers">
-    <documentation>Get the issue headers that match the specified project id and paging details.</documentation>
+    <documentation>Get the issue headers that match the specified project id and paging details. Pass &quot;-1&quot; for the per_page parameter to get all issues.</documentation>
     <input message="tns:mc_project_get_issue_headersRequest"/>
     <output message="tns:mc_project_get_issue_headersResponse"/>
   </operation>
@@ -1023,12 +1039,12 @@
     <output message="tns:mc_filter_getResponse"/>
   </operation>
   <operation name="mc_filter_get_issues">
-    <documentation>Get the issues that match the specified filter and paging details.</documentation>
+    <documentation>Get the issues that match the specified filter and paging details. Pass &quot;-1&quot; for the per_page parameter to get all issues.</documentation>
     <input message="tns:mc_filter_get_issuesRequest"/>
     <output message="tns:mc_filter_get_issuesResponse"/>
   </operation>
   <operation name="mc_filter_get_issue_headers">
-    <documentation>Get the issue headers that match the specified filter and paging details.</documentation>
+    <documentation>Get the issue headers that match the specified filter and paging details.  Pass &quot;-1&quot; for the per_page parameter to get all issues.</documentation>
     <input message="tns:mc_filter_get_issue_headersRequest"/>
     <output message="tns:mc_filter_get_issue_headersResponse"/>
   </operation>
@@ -1072,6 +1088,11 @@
   <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
   <operation name="mc_version">
     <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_version" style="rpc"/>
+    <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+    <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+  </operation>
+  <operation name="mc_login">
+    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_login" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
