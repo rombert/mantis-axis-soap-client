@@ -7,7 +7,7 @@
   </parent>
   <groupId>biz.futureware.mantis</groupId>
   <artifactId>mantis-axis-soap-client</artifactId>
-  <version>1.2.15-SNAPSHOT</version>
+  <version>1.2.15</version>
   <packaging>jar</packaging>
   <name>MantisBT Axis SOAP stubs</name>
   <dependencies>
