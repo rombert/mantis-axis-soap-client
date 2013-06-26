@@ -20,6 +20,7 @@
   <scm>
   	<url>https://github.com/rombert/mantis-axis-soap-client</url>
   	<connection>scm:git:git@github.com:rombert/mantis-axis-soap-client.git</connection>
+  	<developerConnection>scm:git:git@github.com:rombert/mantis-axis-soap-client.git</developerConnection>
   </scm>
   <developers>
   	<developer>
