@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="wsdl-viewer.xsl"?>
 <definitions xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://futureware.biz/mantisconnect" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://futureware.biz/mantisconnect">
 <types>
 <xsd:schema targetNamespace="http://futureware.biz/mantisconnect">
@@ -161,6 +162,25 @@
   <xsd:complexContent>
    <xsd:restriction base="SOAP-ENC:Array">
     <xsd:attribute ref="SOAP-ENC:arrayType" wsdl:arrayType="tns:IssueData[]"/>
+   </xsd:restriction>
+  </xsd:complexContent>
+ </xsd:complexType>
+ <xsd:complexType name="HistoryData">
+  <xsd:all>
+   <xsd:element name="date" type="xsd:integer"/>
+   <xsd:element name="userid" type="xsd:integer"/>
+   <xsd:element name="username" type="xsd:string"/>
+   <xsd:element name="field" type="xsd:string"/>
+   <xsd:element name="type" type="xsd:integer"/>
+   <xsd:element name="old_value" type="xsd:string"/>
+   <xsd:element name="new_value" type="xsd:string"
+   />
+  </xsd:all>
+ </xsd:complexType>
+ <xsd:complexType name="HistoryDataArray">
+  <xsd:complexContent>
+   <xsd:restriction base="SOAP-ENC:Array">
+    <xsd:attribute ref="SOAP-ENC:arrayType" wsdl:arrayType="tns:HistoryData[]"/>
    </xsd:restriction>
   </xsd:complexContent>
  </xsd:complexType>
@@ -435,6 +455,12 @@
   <part name="issue_id" type="xsd:integer" /></message>
 <message name="mc_issue_getResponse">
   <part name="return" type="tns:IssueData" /></message>
+<message name="mc_issue_get_historyRequest">
+  <part name="username" type="xsd:string" />
+  <part name="password" type="xsd:string" />
+  <part name="issue_id" type="xsd:integer" /></message>
+<message name="mc_issue_get_historyResponse">
+  <part name="return" type="tns:HistoryDataArray" /></message>
 <message name="mc_issue_get_biggest_idRequest">
   <part name="username" type="xsd:string" />
   <part name="password" type="xsd:string" />
@@ -552,6 +578,16 @@
   <part name="project_name" type="xsd:string" /></message>
 <message name="mc_project_get_id_from_nameResponse">
   <part name="return" type="xsd:integer" /></message>
+<message name="mc_project_get_issues_for_userRequest">
+  <part name="username" type="xsd:string" />
+  <part name="password" type="xsd:string" />
+  <part name="project_id" type="xsd:integer" />
+  <part name="filter_type" type="xsd:string" />
+  <part name="target_user" type="tns:AccountData" />
+  <part name="page_number" type="xsd:integer" />
+  <part name="per_page" type="xsd:integer" /></message>
+<message name="mc_project_get_issues_for_userResponse">
+  <part name="return" type="tns:IssueDataArray" /></message>
 <message name="mc_project_get_issuesRequest">
   <part name="username" type="xsd:string" />
   <part name="password" type="xsd:string" />
@@ -843,6 +879,11 @@
     <input message="tns:mc_issue_getRequest"/>
     <output message="tns:mc_issue_getResponse"/>
   </operation>
+  <operation name="mc_issue_get_history">
+    <documentation>Get the history of the issue with the specified id.</documentation>
+    <input message="tns:mc_issue_get_historyRequest"/>
+    <output message="tns:mc_issue_get_historyResponse"/>
+  </operation>
   <operation name="mc_issue_get_biggest_id">
     <documentation>Get the latest submitted issue in the specified project.</documentation>
     <input message="tns:mc_issue_get_biggest_idRequest"/>
@@ -932,6 +973,11 @@
     <documentation>Get the id of the project with the specified name.</documentation>
     <input message="tns:mc_project_get_id_from_nameRequest"/>
     <output message="tns:mc_project_get_id_from_nameResponse"/>
+  </operation>
+  <operation name="mc_project_get_issues_for_user">
+    <documentation>Get the issues filtered by the specified user within the specified project. Supported types include "assigned", "monitored", "reported".  Pass &quot;-1&quot; for the per_page parameter to get all issues.  Use project id &quot;0&quot; for all projects.</documentation>
+    <input message="tns:mc_project_get_issues_for_userRequest"/>
+    <output message="tns:mc_project_get_issues_for_userResponse"/>
   </operation>
   <operation name="mc_project_get_issues">
     <documentation>Get the issues that match the specified project id and paging details. Pass &quot;-1&quot; for the per_page parameter to get all issues.</documentation>
@@ -1087,334 +1133,344 @@
 <binding name="MantisConnectBinding" type="tns:MantisConnectPortType">
   <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
   <operation name="mc_version">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_version" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_version" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_login">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_login" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_login" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_enum_status">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_enum_status" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_enum_status" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_enum_priorities">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_enum_priorities" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_enum_priorities" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_enum_severities">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_enum_severities" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_enum_severities" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_enum_reproducibilities">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_enum_reproducibilities" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_enum_reproducibilities" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_enum_projections">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_enum_projections" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_enum_projections" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_enum_etas">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_enum_etas" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_enum_etas" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_enum_resolutions">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_enum_resolutions" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_enum_resolutions" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_enum_access_levels">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_enum_access_levels" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_enum_access_levels" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_enum_project_status">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_enum_project_status" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_enum_project_status" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_enum_project_view_states">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_enum_project_view_states" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_enum_project_view_states" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_enum_view_states">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_enum_view_states" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_enum_view_states" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_enum_custom_field_types">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_enum_custom_field_types" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_enum_custom_field_types" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_enum_get">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_enum_get" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_enum_get" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_issue_exists">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_issue_exists" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_exists" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_issue_get">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_issue_get" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_get" style="rpc"/>
+    <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+    <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+  </operation>
+  <operation name="mc_issue_get_history">
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_get_history" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_issue_get_biggest_id">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_issue_get_biggest_id" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_get_biggest_id" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_issue_get_id_from_summary">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_issue_get_id_from_summary" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_get_id_from_summary" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_issue_add">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_issue_add" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_add" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_issue_update">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_issue_update" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_update" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_issue_set_tags">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_issue_set_tags" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_set_tags" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_issue_delete">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_issue_delete" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_delete" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_issue_note_add">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_issue_note_add" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_note_add" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_issue_note_delete">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_issue_note_delete" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_note_delete" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_issue_note_update">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_issue_note_update" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_note_update" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_issue_relationship_add">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_issue_relationship_add" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_relationship_add" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_issue_relationship_delete">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_issue_relationship_delete" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_relationship_delete" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_issue_attachment_add">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_issue_attachment_add" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_attachment_add" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_issue_attachment_delete">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_issue_attachment_delete" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_attachment_delete" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_issue_attachment_get">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_issue_attachment_get" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_attachment_get" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_add">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_add" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_add" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_delete">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_delete" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_delete" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_update">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_update" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_update" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_get_id_from_name">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_get_id_from_name" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_get_id_from_name" style="rpc"/>
+    <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
+    <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
+  </operation>
+  <operation name="mc_project_get_issues_for_user">
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_get_issues_for_user" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_get_issues">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_get_issues" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_get_issues" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_get_issue_headers">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_get_issue_headers" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_get_issue_headers" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_get_users">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_get_users" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_get_users" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_projects_get_user_accessible">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_projects_get_user_accessible" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_projects_get_user_accessible" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_get_categories">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_get_categories" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_get_categories" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_add_category">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_add_category" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_add_category" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_delete_category">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_delete_category" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_delete_category" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_rename_category_by_name">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_rename_category_by_name" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_rename_category_by_name" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_get_versions">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_get_versions" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_get_versions" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_version_add">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_version_add" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_version_add" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_version_update">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_version_update" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_version_update" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_version_delete">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_version_delete" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_version_delete" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_get_released_versions">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_get_released_versions" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_get_released_versions" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_get_unreleased_versions">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_get_unreleased_versions" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_get_unreleased_versions" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_get_attachments">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_get_attachments" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_get_attachments" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_get_custom_fields">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_get_custom_fields" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_get_custom_fields" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_attachment_get">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_attachment_get" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_attachment_get" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_attachment_add">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_attachment_add" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_attachment_add" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_attachment_delete">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_attachment_delete" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_attachment_delete" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_project_get_all_subprojects">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_project_get_all_subprojects" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_project_get_all_subprojects" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_filter_get">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_filter_get" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_filter_get" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_filter_get_issues">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_filter_get_issues" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_filter_get_issues" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_filter_get_issue_headers">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_filter_get_issue_headers" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_filter_get_issue_headers" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_config_get_string">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_config_get_string" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_config_get_string" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_issue_checkin">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_issue_checkin" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_issue_checkin" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_user_pref_get_pref">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_user_pref_get_pref" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_user_pref_get_pref" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_user_profiles_get_all">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_user_profiles_get_all" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_user_profiles_get_all" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_tag_get_all">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_tag_get_all" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_tag_get_all" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_tag_add">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_tag_add" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_tag_add" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
   <operation name="mc_tag_delete">
-    <soap:operation soapAction="http://localhost/mantis/api/soap/mantisconnect.php/mc_tag_delete" style="rpc"/>
+    <soap:operation soapAction="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php/mc_tag_delete" style="rpc"/>
     <input><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></input>
     <output><soap:body use="encoded" namespace="http://futureware.biz/mantisconnect" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/></output>
   </operation>
 </binding>
 <service name="MantisConnect">
   <port name="MantisConnectPort" binding="tns:MantisConnectBinding">
-    <soap:address location="http://localhost/mantis/api/soap/mantisconnect.php"/>
+    <soap:address location="http://www.mantisbt.org/bugs/api/soap/mantisconnect.php"/>
   </port>
 </service>
 </definitions>
